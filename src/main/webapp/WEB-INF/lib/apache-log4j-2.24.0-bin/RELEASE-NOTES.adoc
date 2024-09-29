@@ -1,0 +1,143 @@
+////
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+////
+
+[#release-notes-2-24-0]
+== 2.24.0
+
+Release date:: 2024-09-03
+
+This release contains improvements and changes in several areas of Apache Log4j:
+
+=== Log4j API
+
+The `2.24.0` version of Log4j API has been enhanced with changes from the 3.x branch and will be used by both Log4j 2 Core and Log4j 3 Core releases.
+The changes include:
+
+* A faster default `ThreadContextMap`.
+* Enhanced GraalVM support: native binaries that use Log4j API will no longer require additional GraalVM configuration.
+* The configuration properties subsystem now only accepts the official pre-2.10 property names and the normalized post-2.10 names.
+Check your configuration for typos.
+
+=== Documentation
+
+The xref:index.adoc[Apache Log4j 2] website has been almost entirely rewritten to provide improved documentation and faster access to the information you need.
+
+=== Bridges
+
+The JUL-to-Log4j API and Log4j 1-to-Log4j API will no longer be able to modify the configuration of Log4j Core by default.
+If such a functionality is required, it must be explicitly enabled.
+
+=== Modules
+
+The following Log4j Core additional modules have been removed:
+
+`log4j-flume-ng`::
+The module is no longer part of the release process and will follow its own release lifecycle.
+Please manage your dependencies using xref:components.adoc#log4j-bom[`log4j-bom`] to always use its latest version.
+
+`log4j-kubernetes`::
+The module has been moved to the https://github.com/fabric8io/kubernetes-client/blob/main/doc/KubernetesLog4j.md[Fabric8.io Kubernetes project] and follows the Fabric8.io release lifecycle.
+
+`log4j-mongodb3`::
+The module based on MongoDB Java client version 3.x has been removed.
+Please migrate to xref:components.adoc#log4j-mongodb[`log4j-mongodb`] (client version 5.x) or xref:components.adoc#log4j-mongodb4[`log4j-mongodb4`] (client version 4.x).
+
+=== JMX changes
+
+Starting in version 2.24.0, JMX support is disabled by default and can be re-enabled via the `log4j2.disableJmx=false` system property.
+
+
+[#release-notes-2-24-0-added]
+=== Added
+
+* Add a faster `DefaultThreadContextMap` implementation. (https://github.com/apache/logging-log4j2/pull/2330[2330])
+* Add Logback throwable-consuming semantics as an option in `log4j-slf4j-impl` and `log4j-slf4j2-impl`. Users can enable it by setting the property `log4j2.messageFactory` to `org.apache.logging.slf4j.message.ThrowableConsumingMessageFactory`. (https://github.com/apache/logging-log4j2/issues/2363[2363])
+* Add trace context fields to `GcpLayout.json` (https://github.com/apache/logging-log4j2/pull/2498[2498])
+* Add _"Plugin Reference"_ to the website. It is a Javadoc-on-steroids focusing on Log4j plugins. (https://github.com/apache/logging-log4j2/issues/1954[1954])
+* Automate website deployment using the new CI infrastructure shipped with `org.apache.logging:logging-parent:11.0.0`
+
+[#release-notes-2-24-0-changed]
+=== Changed
+
+* Fix usage of `log4j-api` in GraalVM without additional reachability data. (https://github.com/apache/logging-log4j2/issues/1539[1539])
+* Ignore exceptions thrown by PropertySources. (https://github.com/spring-projects/spring-boot/issues/33450[Spring-33450])
+* Add logging to `PropertiesUtil` and fix `Duration` parser. (https://github.com/apache/logging-log4j2/issues/1963[1936])
+* Disable level modification via JUL by default. (https://github.com/apache/logging-log4j2/issues/2353[2353])
+* Centralize initialization in the `Provider` class and deprecate `log4j2.loggerContextFactory` property. (https://github.com/apache/logging-log4j2/pull/2374[2374])
+* Remove `log4j-kubernetes` lookup. User should migrate to https://github.com/fabric8io/kubernetes-client/blob/main/doc/KubernetesLog4j.md[`io.fabric8:kubernetes-log4j`]. (https://github.com/apache/logging-log4j2/pull/2412[2412])
+* Disable JMX support by default. Require `log4j2.disableJmx` to be set to `false` to enable JMX support. (https://github.com/apache/logging-log4j2/issues/2462[2462])
+* Replace some usages of `DateTimeFormatter#toString()` with `DateTimeFormatter#formatTo(StringBuilder)` to cut down on allocations (https://github.com/apache/logging-log4j2/pull/2515[2515])
+* Disable programmatic configuration in Log4j 1 Bridge if `log4j1.compatibility` is `false`. (https://github.com/apache/logging-log4j2/issues/2778[2778])
+* Improve missing plugin descriptor warnings. (https://github.com/apache/logging-log4j2/issues/2835[2835])
+* Remove configuration properties caching and (undocumented) fuzzy property name matching. (https://github.com/apache/logging-log4j2/pull/2849[2849])
+* Fixes property source ordering to account for different sources with the same priority. (https://issues.apache.org/jira/browse/LOG4J2-3618[LOG4J2-3618])
+* Prioritize user-defined values of `log4j2.enableThreadLocals`, `log4j2.garbagefreeThreadContextMap` and `log4j2.shutdownHookEnabled` over the value of `log4j.isWebapp`. (https://github.com/apache/logging-log4j2/pull/2517[2517])
+* Disallow duplicate keys in JSON Template Layout templates
+* Deprecate `log4j2.defaultStatusLevel` property in Log4j Core in favor of `log4j2.statusLoggerLevel` (https://github.com/apache/logging-log4j2/pull/2481[2481])
+
+[#release-notes-2-24-0-deprecated]
+=== Deprecated
+
+* Deprecate `Message#getFormat()` due to unclear semantics and inconsistent implementations (https://github.com/apache/logging-log4j2/pull/2773[2773])
+* Deprecate `org.apache.logging.log4j.EventLogger` for removal (https://github.com/apache/logging-log4j2/pull/2665[2665])
+* Deprecate `org.apache.logging.log4j.core.appender.rolling.action.Duration` class for removal (https://github.com/apache/logging-log4j2/pull/2425[2425])
+* Deprecate the `log4j-mongodb4` module in favor of `log4j-mongodb` (https://github.com/apache/logging-log4j2/pull/2486[2486])
+
+[#release-notes-2-24-0-fixed]
+=== Fixed
+
+* Use FQDN in RFC5424 Layout. (https://github.com/apache/logging-log4j2/issues/1740[1740])
+* Fix custom thread-context data provider handling in lookups and filters. (https://github.com/apache/logging-log4j2/issues/2331[2331])
+* Fix handling of `log4j2.messageFactory` and `log4j2.flowMessageFactory` properties (https://github.com/apache/logging-log4j2/pull/2505[2505])
+* Discard blank keys in `PropertiesUtil` (https://github.com/apache/logging-log4j2/issues/2414[2414])
+* Fix handling of `log4j2.debug`. (https://github.com/apache/logging-log4j2/issues/2703[2703])
+* Fix location requirement for the `%F` and `%file` keys in Pattern Layout (https://github.com/apache/logging-log4j2/issues/2781[2781])
+* Fix `JsonLayout` failure under JPMS. (https://github.com/apache/logging-log4j2/issues/2814[2814])
+* Fix empty string handling for `TruncatingBufferedWriter` (https://github.com/apache/logging-log4j2/pull/2609[2609])
+* Fix that parameterized message formatting throws an exception when there are insufficient number of parameters. It previously simply didn't replace the '{}' sequence. The behavior changed in 2.21.0 and should be restored for backward compatibility. (https://github.com/apache/logging-log4j2/issues/2380[2380])
+* Fix `ClassCastException` in LMAX Disruptor 3 initialization (https://github.com/apache/logging-log4j2/pull/2768[2768])
+* Fix requirement on the `java.management` module when JMX is disabled, which is the default (https://github.com/apache/logging-log4j2/pull/2775[2775])
+* Website is migrated to Antora with several formatting and link fixes (https://github.com/apache/logging-log4j2/pull/2427[2427])
+
+[#release-notes-2-24-0-removed]
+=== Removed
+
+* Move Flume Appender to its own release lifecycle. (https://github.com/apache/logging-log4j2/issues/2902[2902])
+
+[#release-notes-2-24-0-updated]
+=== Updated
+
+* Add module log4j-mongodb to track the current MongoDB driver (currently version 5). (https://github.com/apache/logging-log4j2/pull/2486[2486])
+* Remove module log4j-mongodb3, use log4j-mongodb instead, log4j-mongodb4 is deprecated for removal. (https://github.com/apache/logging-log4j2/pull/2486[2486])
+* Update `com.fasterxml.jackson:jackson-bom` to version `2.17.2` (https://github.com/apache/logging-log4j2/pull/2719[2719])
+* Update `com.github.luben:zstd-jni` to version `1.5.6-5` (https://github.com/apache/logging-log4j2/pull/2901[2901])
+* Update `commons-codec:commons-codec` to version `1.17.1` (https://github.com/apache/logging-log4j2/pull/2741[2741])
+* Update `commons-logging:commons-logging` to version `1.3.4` (https://github.com/apache/logging-log4j2/pull/2864[2864])
+* Update `github/codeql-action` to version `3.25.1` (https://github.com/apache/logging-log4j2/pull/2483[2483])
+* Update `io.fabric8:docker-maven-plugin` to version `0.45.0` (https://github.com/apache/logging-log4j2/pull/2776[2776])
+* Update `org.apache.cassandra:cassandra-all` to version `3.11.17` (https://github.com/apache/logging-log4j2/pull/2479[2479])
+* Update `org.apache.commons:commons-compress` to version `1.27.1` (https://github.com/apache/logging-log4j2/pull/2869[2869])
+* Update `org.apache.commons:commons-csv` to version `1.11.0` (https://github.com/apache/logging-log4j2/pull/2565[2565])
+* Update `org.apache.commons:commons-lang3` to version `3.17.0` (https://github.com/apache/logging-log4j2/pull/2907[2907])
+* Update `org.apache.kafka:kafka-clients` to version `3.8.0` (https://github.com/apache/logging-log4j2/pull/2777[2777])
+* Update `org.apache.logging:logging-parent` to version `11.2.0`
+* Update `org.eclipse.jetty:jetty-bom` to version `9.4.55.v20240627` (https://github.com/apache/logging-log4j2/pull/2709[2709])
+* Update `org.jctools:jctools-core` to version `4.0.5` (https://github.com/apache/logging-log4j2/pull/2637[2637])
+* Update log4j-mongodb4 `org.mongodb:*` from `4.11.1` to `4.11.2` (https://github.com/apache/logging-log4j2/pull/2409[2409])
+* Update `org.mongodb:bson` to version `5.1.3` (https://github.com/apache/logging-log4j2/pull/2823[2823])
+* Update `org.slf4j:slf4j-api` to version `2.0.16` (https://github.com/apache/logging-log4j2/pull/2829[2829])
+* Update `org.springframework:spring-framework-bom` to version `5.3.39` (https://github.com/apache/logging-log4j2/pull/2840[2840])
