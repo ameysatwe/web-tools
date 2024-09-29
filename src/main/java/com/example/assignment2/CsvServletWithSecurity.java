@@ -11,8 +11,8 @@ import java.io.PrintWriter;
 
 import java.sql.*;
 
-@WebServlet(name="csvServlet",value = "/csv.xls")
-public class CsvServlet extends HttpServlet {
+@WebServlet(name="CsvServletWithSecurity",value = "/csvWithSecurity.xls")
+public class CsvServletWithSecurity extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);

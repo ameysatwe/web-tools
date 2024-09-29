@@ -8,7 +8,7 @@
             <web-resource-name>Protected Excel Data</web-resource-name>
             <!-- URL pattern that needs to be secured -->
             <url-pattern>/excel.xls</url-pattern>
-            <url-pattern>/csv.xls</url-pattern>
+            <url-pattern>/csvWithSecurity.xls</url-pattern>
             <!-- Restrict access to only GET requests -->
             <http-method>GET</http-method>
         </web-resource-collection>
