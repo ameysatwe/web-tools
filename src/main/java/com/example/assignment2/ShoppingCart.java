@@ -83,7 +83,6 @@ public class ShoppingCart extends HttpServlet {
                 String action = req.getParameter("action");
                 if(action.equals("add")){
                     if(products!=null){
-
                         HttpSession sess = req.getSession();
                         sess.setAttribute("products",products);
                         System.out.println(sess.getId());
@@ -95,11 +94,21 @@ public class ShoppingCart extends HttpServlet {
                         HttpSession remSess = req.getSession();
                         String[] prods = (String[]) remSess.getAttribute("products");
                         if(prods!=null){
-                            System.out.println(remSess.getId()+prods.length);
+
                             ArrayList<String> list = new ArrayList<>(Arrays.asList(prods));
-                            list.removeAll(Arrays.asList(products));
-                            remSess.setAttribute("products",list.toArray(new String[0]));
-                            System.out.println("remove len"+((String[]) remSess.getAttribute("products")).length);
+                            ArrayList<String> listSelected = new ArrayList<>(Arrays.asList(products));
+//                            for(String l:listSelected){
+//                                if(!list.contains(l)){
+
+//                                }
+//                            }
+                            if(!list.removeAll(Arrays.asList(products))){
+                                out.println("<script> alert('Please check cart')</script>");
+                            }
+                            else {
+                                remSess.setAttribute("products", list.toArray(new String[0]));
+                                System.out.println("remove len" + ((String[]) remSess.getAttribute("products")).length);
+                            }
                         }
                     }
                 }
